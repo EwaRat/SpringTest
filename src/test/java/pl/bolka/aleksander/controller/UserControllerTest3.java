@@ -1,10 +1,14 @@
 package pl.bolka.aleksander.controller;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Test;
@@ -21,16 +25,23 @@ import pl.bolka.aleksander.service.IUserService;
 @WebMvcTest(controllers = UserController.class)
 public class UserControllerTest3 {
 
-//  @MockBean
-//  private IUserService userService;
+  @MockBean
+  private IUserService userService;
 
   @Autowired
   private MockMvc mockMvc;
 
   @Test
   public void shouldReturnDefaultMessage() throws Exception {
-//    when(userService.getUserById(1)).thenReturn(new User());
+    when(userService.getUserById(1)).thenReturn(new User());
     this.mockMvc.perform(get("/user/1")).andDo(print()).andExpect(status().isOk())
                 .andExpect(content().string(containsString("{\"id\":null,\"firstName\":null,\"lastName\":null}")));
+  }
+
+  @Test
+  public void shouldReturnFineJson() throws Exception {
+    when(userService.getUserById(1)).thenReturn(new User());
+    this.mockMvc.perform(get("/user/1")).andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName",is(nullValue())));
   }
 }
